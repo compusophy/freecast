@@ -82,43 +82,6 @@ export default function Demo({ title }: { title?: string } = { title: "Frames v2
     };
   }, []);
 
-  // Handle authentication
-  useEffect(() => {
-    let mounted = true;
-
-    const login = async () => {
-      if (!isPrivyAuthenticated && isPrivyReady && isSDKLoaded) {
-        if (isFrameContext) {
-          console.log('Using Frame login flow');
-          try {
-            const { nonce } = await initLoginToFrame();
-            const signInResult = await frameSdk.actions.signIn({ nonce });
-            
-            if (mounted && signInResult?.message && signInResult?.signature) {
-              await loginToFrame({
-                message: signInResult.message,
-                signature: signInResult.signature,
-              });
-            }
-          } catch (error) {
-            console.error("Frame login failed:", error);
-          }
-        } else {
-          console.log('Using web app login flow');
-          if (mounted) {
-            await privyLogin();
-          }
-        }
-      }
-    };
-
-    login();
-
-    return () => {
-      mounted = false;
-    };
-  }, [isPrivyReady, isPrivyAuthenticated, isSDKLoaded, isFrameContext, initLoginToFrame, loginToFrame, privyLogin]);
-
   // Create wallet if needed
   useEffect(() => {
     if (
@@ -209,13 +172,6 @@ export default function Demo({ title }: { title?: string } = { title: "Frames v2
           <div className="space-y-4">
             <Button onClick={linkWallet} variant="secondary">
               Connect external wallet
-            </Button>
-            <Button 
-              onClick={privyLogout} 
-              variant="secondary"
-              className="w-full"
-            >
-              Disconnect Privy
             </Button>
           </div>
         </div>
